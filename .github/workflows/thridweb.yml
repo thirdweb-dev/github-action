@@ -1,10 +1,7 @@
-# This is a basic workflow to help you get started with Actions
+name: thirdweb
 
-name: thirdweb-deploy
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
+  # Triggers the workflow on push or pull request events
   push:
     branches: [ "*" ]
   pull_request:
@@ -32,22 +29,34 @@ jobs:
         id: deploy
         if: github.event_name == 'pull_request' || github.ref != format('refs/heads/{0}', github.event.repository.default_branch)
         run: |
-          DEPLOY=$(npx @thirdweb-dev/cli@dev deploy -i)
+          DEPLOY=$(npx @thirdweb-dev/cli@dev deploy --ci | grep http)
           echo "::set-output name=stdout::$DEPLOY"
       - name: publish
         id: publish
         if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         run: |
-          PUBLISH=$(npx @thirdweb-dev/cli@dev publish -i)
+          PUBLISH=$(npx @thirdweb-dev/cli@dev publish --ci | grep http)
           echo "::set-output name=stdout::$PUBLISH"
 
-  notify:
+  comment_on_commit:
     runs-on: ubuntu-latest
     needs: [thirdweb]
     steps:
-      - name: thirdweb dashboard url comment
+      - name: Comment on commit
+        if: github.event_name == 'push'
         uses: peter-evans/commit-comment@v2
         with:
           body: |
-            ${{ needs.thirdweb.outputs.publish_output }}
-            ${{ needs.thirdweb.outputs.deploy_output }}
+            <a href="${{ needs.thirdweb.outputs.publish_output }}${{ needs.thirdweb.outputs.deploy_output }}"><img width="200px" src="https://gateway.thirdweb.dev/ipfs/QmfZuFVN94f5fSs2kDGuzb6ExkT4aYVXd8mbWxSSUZGd3Z/0.svg" /></a>
+
+  comment_on_pr:
+    runs-on: ubuntu-latest
+    needs: [thirdweb]
+    steps:
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: |
+            <a href="${{ needs.thirdweb.outputs.publish_output }}${{ needs.thirdweb.outputs.deploy_output }}"><img width="200px" src="https://gateway.thirdweb.dev/ipfs/QmfZuFVN94f5fSs2kDGuzb6ExkT4aYVXd8mbWxSSUZGd3Z/0.svg" /></a>
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
