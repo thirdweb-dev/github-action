@@ -16,6 +16,10 @@ jobs:
   thirdweb:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: write
     outputs:
       publish_output: ${{ steps.publish.outputs.stdout }}
       deploy_output: ${{ steps.deploy.outputs.stdout }}
@@ -48,7 +52,7 @@ jobs:
         with:
           body: |
             <a href="${{ needs.thirdweb.outputs.publish_output }}${{ needs.thirdweb.outputs.deploy_output }}"><img width="200px" src="https://gateway.thirdweb.dev/ipfs/QmfZuFVN94f5fSs2kDGuzb6ExkT4aYVXd8mbWxSSUZGd3Z/0.svg" /></a>
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   comment_on_pr:
     runs-on: ubuntu-latest
