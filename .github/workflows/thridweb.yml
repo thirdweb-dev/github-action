@@ -62,7 +62,9 @@ jobs:
         uses: peter-evans/commit-comment@v2
         with:
           body: |
-            <a href="${{ needs.thirdweb.outputs.publish_output }}${{ needs.thirdweb.outputs.deploy_output }}"><img width="200px" src="https://gateway.thirdweb.dev/ipfs/QmfZuFVN94f5fSs2kDGuzb6ExkT4aYVXd8mbWxSSUZGd3Z/0.svg" /></a>
+            Contract compiled, deploy using the button below
+            <p>
+            <a href="${{ needs.thirdweb.outputs.publish_output }}${{ needs.thirdweb.outputs.deploy_output }}"><img width="200px" src="https://gateway.thirdweb.dev/ipfs/QmZdGx8gd5sKyQeaxqDvpH7KNFiHF7zRjzPysPGW8TGYqN/0.svg" /></a>
           token: ${{ secrets.GITHUB_TOKEN }}
 
   comment_on_pr:
@@ -74,5 +76,7 @@ jobs:
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: |
-            <a href="${{ needs.thirdweb.outputs.publish_output }}${{ needs.thirdweb.outputs.deploy_output }}"><img width="200px" src="https://gateway.thirdweb.dev/ipfs/QmfZuFVN94f5fSs2kDGuzb6ExkT4aYVXd8mbWxSSUZGd3Z/0.svg" /></a>
+            Contract compiled, deploy using the button below
+            <p>
+            <a href="${{ needs.thirdweb.outputs.publish_output }}${{ needs.thirdweb.outputs.deploy_output }}"><img width="200px" src="https://gateway.thirdweb.dev/ipfs/QmZdGx8gd5sKyQeaxqDvpH7KNFiHF7zRjzPysPGW8TGYqN/0.svg" /></a>
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
