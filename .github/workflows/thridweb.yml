@@ -48,6 +48,7 @@ jobs:
         with:
           body: |
             <a href="${{ needs.thirdweb.outputs.publish_output }}${{ needs.thirdweb.outputs.deploy_output }}"><img width="200px" src="https://gateway.thirdweb.dev/ipfs/QmfZuFVN94f5fSs2kDGuzb6ExkT4aYVXd8mbWxSSUZGd3Z/0.svg" /></a>
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   comment_on_pr:
     runs-on: ubuntu-latest
