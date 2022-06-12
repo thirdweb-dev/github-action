@@ -1,4 +1,10 @@
-github-action
+thirdweb Github Action
 
-* run npx thirdweb publish on pushes to main
-* run npx thirdweb deploy on pull_requests (all branches) and pushes (everything except main)
+
+runs the following commands:
+* ```npx thirdweb publish --ci``` - push to main
+* ```npx thirdweb deploy --ci```  - all pull requests and push on every branch except main
+
+
+Note:
+--ci flag for thirdweb tries to install your build dependencies
