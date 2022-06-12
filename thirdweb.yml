@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       deploy_output: ${{ steps.deploy.outputs.stdout }}
+    if: github.event_name == 'pull_request' || github.ref != format('refs/heads/{0}', github.event.repository.default_branch)
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -25,7 +26,6 @@ jobs:
 
       - name: deploy
         id: deploy
-        if: github.event_name == 'pull_request' || github.ref != format('refs/heads/{0}', github.event.repository.default_branch)
         run: |
           DEPLOY=$(npx thirdweb deploy --ci | grep http)
           echo "::set-output name=stdout::$DEPLOY"
@@ -35,6 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       publish_output: ${{ steps.publish.outputs.stdout }}
+    if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -44,33 +45,38 @@ jobs:
 
       - name: publish
         id: publish
-        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         run: |
           PUBLISH=$(npx thirdweb publish --ci | grep http)
           echo "::set-output name=stdout::$PUBLISH"
 
   comment_on_commit:
     runs-on: ubuntu-latest
-    needs: [deploy, publish]
-    if: github.event_name == 'push'
+    if: always() && github.event_name == 'push'
     steps:
-      - name: Comment on commit
+      - name: Comment on commit (publish)
         uses: peter-evans/commit-comment@v2
+        if: ${{ needs.publish.outputs.publish_output != '' }}
         with:
           body: |
-            if [${{ needs.publish.outputs.publish_output }}]
-            then
-              Contract compiled, publish using the button below
-            else
-              Contract compiled, deploy using the button below
-            fi
+            Contract compiled, publish using the button below
             <p>
-            <a href="${{ needs.publish.outputs.publish_output }}${{ needs.deploy.outputs.deploy_output }}"><img width="200px" src="https://gateway.thirdweb.dev/ipfs/QmZdGx8gd5sKyQeaxqDvpH7KNFiHF7zRjzPysPGW8TGYqN/0.svg" /></a>
+            <a href="${{ needs.publish.outputs.publish_output }}"><img width="200px" src="https://gateway.thirdweb.dev/ipfs/QmZdGx8gd5sKyQeaxqDvpH7KNFiHF7zRjzPysPGW8TGYqN/0.svg" /></a>
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on commit (deploy)
+        uses: peter-evans/commit-comment@v2
+        if: ${{ needs.deploy.outputs.deploy_output != '' }}
+        with:
+          body: |
+            Contract compiled, deploy using the button below
+            <p>
+            <a href="${{ needs.deploy.outputs.deploy_output }}"><img width="200px" src="https://gateway.thirdweb.dev/ipfs/QmZdGx8gd5sKyQeaxqDvpH7KNFiHF7zRjzPysPGW8TGYqN/0.svg" /></a>
+          token: ${{ secrets.GITHUB_TOKEN }}
+
 
   comment_on_pr:
     runs-on: ubuntu-latest
-    needs: [deploy, publish]
+    needs: [deploy]
     if: github.event_name == 'pull_request'
     steps:
       - name: Comment on PR
@@ -79,5 +85,5 @@ jobs:
           message: |
             Contract compiled, deploy using the button below
             <p>
-            <a href="${{ needs.publish.outputs.publish_output }}${{ needs.deploy.outputs.deploy_output }}"><img width="200px" src="https://gateway.thirdweb.dev/ipfs/QmZdGx8gd5sKyQeaxqDvpH7KNFiHF7zRjzPysPGW8TGYqN/0.svg" /></a>
+            <a href="${{ needs.deploy.outputs.deploy_output }}"><img width="200px" src="https://gateway.thirdweb.dev/ipfs/QmZdGx8gd5sKyQeaxqDvpH7KNFiHF7zRjzPysPGW8TGYqN/0.svg" /></a>
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
