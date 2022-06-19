@@ -15,8 +15,8 @@ jobs:
   deploy_or_publish:
     runs-on: ubuntu-latest
     outputs:
-      deploy_output: ${{ steps.deploy_or_publish.outputs.stdout }}
-      publish_output: ${{ steps.deploy_or_publish.outputs.stdout }}
+      deploy_output: ${{ steps.deploy.outputs.stdout }}
+      publish_output: ${{ steps.publish.outputs.stdout }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -53,7 +53,7 @@ jobs:
           body: |
             Contract compiled, publish using the button below
             <p>
-            <a href="${{ needs.deploy_or_publish.outputs.publish_output }}"><img width="200px" src="https://gateway.thirdweb.dev/ipfs/QmS6gcgu3QynRQ4xBEJVL8xNycMyPNW4Da9RgzTswmxQzf/0.svg" /></a>
+            <a href="${{ needs.deploy_or_publish.outputs.publish_output }}"><img width="120px" src="https://gateway.thirdweb.dev/ipfs/QmS6gcgu3QynRQ4xBEJVL8xNycMyPNW4Da9RgzTswmxQzf/0.svg" /></a>
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Comment on commit (deploy)
@@ -63,7 +63,7 @@ jobs:
           body: |
             Contract compiled, deploy using the button below
             <p>
-            <a href="${{ needs.deploy_or_publish.outputs.deploy_output }}"><img width="200px" src="https://gateway.thirdweb.dev/ipfs/QmdS2yxCteNePeAw9h7dnaSvorNA1AMYCtX4DuG15YR3jo/0.svg" /></a>
+            <a href="${{ needs.deploy_or_publish.outputs.deploy_output }}"><img width="120px" src="https://gateway.thirdweb.dev/ipfs/QmdS2yxCteNePeAw9h7dnaSvorNA1AMYCtX4DuG15YR3jo/0.svg" /></a>
           token: ${{ secrets.GITHUB_TOKEN }}
 
 
@@ -78,5 +78,5 @@ jobs:
           message: |
             Contract compiled, deploy using the button below
             <p>
-            <a href="${{ needs.deploy_or_publish.outputs.deploy_output }}"><img width="200px" src="https://gateway.thirdweb.dev/ipfs/QmdS2yxCteNePeAw9h7dnaSvorNA1AMYCtX4DuG15YR3jo/0.svg" /></a>
+            <a href="${{ needs.deploy_or_publish.outputs.deploy_output }}"><img width="120px" src="https://gateway.thirdweb.dev/ipfs/QmdS2yxCteNePeAw9h7dnaSvorNA1AMYCtX4DuG15YR3jo/0.svg" /></a>
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
